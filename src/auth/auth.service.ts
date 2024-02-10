@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UpdateAuthInput } from './dto/update-auth.input';
 import { CreateUserInput } from './dto/createUserInput';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
@@ -51,7 +50,7 @@ export class AuthService {
       user.id,
       user.username,
     );
-
+    await this.updateRefreshToken(user.id, refreshToken);
     return { accessToken, refreshToken, user };
   }
 
@@ -73,6 +72,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Authentication Invalid');
     }
+
     const isRefreshTokenCorrect = await verify(
       user.refreshToken,
       refreshTokenIn,
@@ -92,18 +92,6 @@ export class AuthService {
 
   findAll() {
     return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthInput: UpdateAuthInput) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
   }
 
   async CreateToken(userId: string, username: string) {
